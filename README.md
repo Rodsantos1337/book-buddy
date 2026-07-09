@@ -15,9 +15,8 @@ real book suggestions.
 ## Getting Started
 
 1. Clone the repo
-2. Copy `.env.example` to `.env` (or leave defaults — server uses port 4000)
-3. `pnpm install`
-4. `pnpm run dev` — starts frontend on `http://localhost:5173` and backend on `http://localhost:4000`
+2. `pnpm install` (server defaults to port 4000)
+3. `pnpm run dev` — starts frontend on `http://localhost:5173` and backend on `http://localhost:4000`
 
 ## Production
 
