@@ -4,11 +4,11 @@ import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 
 const SUGGESTIONS = [
-  "Finished Katabasis, didn't like the romance — what next?",
-  "Light fantasy read under 300 pages",
-  "Mystery with a female detective",
-  "Dark fantasy, morally grey characters",
-  "Books like The Name of the Wind with more action",
+  "Space opera with political intrigue",
+  "Cozy mystery set in a small town",
+  "Hard sci-fi with realistic physics",
+  "Philosophical fantasy like The Name of the Wind",
+  "Historical fiction set in ancient Rome",
 ];
 
 interface ChatContainerProps {
