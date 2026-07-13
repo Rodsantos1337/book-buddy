@@ -1,5 +1,5 @@
 name = "book-buddy"
-pages_project_name = "book-buddy"
 compatibility_date = "2026-07-12"
 compatibility_flags = ["nodejs_compat"]
 pages_build_output_dir = "dist"
+account_id = "3ba9242780c46ecde98d2c586042943a"
