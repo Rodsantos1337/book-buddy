@@ -7,3 +7,4 @@ AGENTS.md
 todo.md
 .wrangler
 new-server/dist/
+_worker.bundle
