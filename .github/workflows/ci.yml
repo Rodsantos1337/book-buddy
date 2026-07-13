@@ -25,6 +25,8 @@ jobs:
       - run: pnpm run typecheck
       - run: pnpm run lint
       - run: pnpm run build
+      - name: Validate Pages Functions bundle
+        run: npx wrangler pages functions build --build-output-directory dist
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -45,4 +47,6 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy dist/ --project-name=book-buddy
+          command: pages deploy dist/ --project-name=book-buddy --branch=${{ github.head_ref || github.ref_name }}
+        env:
+          WRANGLER_VERSION: "4"
