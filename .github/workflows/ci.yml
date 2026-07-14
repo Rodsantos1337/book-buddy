@@ -45,7 +45,6 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: pages deploy dist/ --project-name=book-buddy --branch=${{ github.head_ref || github.ref_name }}
+          command: pages deploy dist/ --project-name=book-buddy --branch=${{ github.head_ref || github.ref_name }} --account-id=${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
         env:
           WRANGLER_VERSION: "4"
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
