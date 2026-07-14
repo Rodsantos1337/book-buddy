@@ -51,19 +51,6 @@ export interface ChatCompletionMessage {
   tool_call_id?: string;
 }
 
-export interface ChatCompletionChoice {
-  finish_reason: "stop" | "tool_calls" | "length";
-  message: {
-    role: string;
-    content: string | null;
-    tool_calls?: ToolCall[];
-  };
-}
-
-export interface ChatCompletionResponse {
-  choices: ChatCompletionChoice[];
-}
-
 export interface ToolDefinition {
   type: "function";
   function: {

@@ -6,5 +6,4 @@ AGENTS.md
 .vscode
 todo.md
 .wrangler
-new-server/dist/
 _worker.bundle

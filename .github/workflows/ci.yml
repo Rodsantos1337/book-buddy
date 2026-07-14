@@ -24,8 +24,6 @@ jobs:
       - run: npm run typecheck
       - run: npm run lint
       - run: npm run build
-      - name: Validate Pages Functions bundle
-        run: npx wrangler pages functions build --build-output-directory dist
 
   deploy:
     if: github.ref == 'refs/heads/main'
@@ -41,13 +39,10 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - name: Deploy to Cloudflare Pages
+      - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy dist/ --project-name=book-buddy --branch=${{ github.head_ref || github.ref_name }}
-          preCommands: |
-            npx wrangler pages project create book-buddy --production-branch main || true
+          command: deploy
         env:
           WRANGLER_VERSION: "4"
