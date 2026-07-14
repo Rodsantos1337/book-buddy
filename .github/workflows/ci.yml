@@ -47,5 +47,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy dist/ --project-name=book-buddy --branch=${{ github.head_ref || github.ref_name }}
+          preCommands: |
+            npx wrangler pages project create book-buddy --production-branch main || true
         env:
           WRANGLER_VERSION: "4"
