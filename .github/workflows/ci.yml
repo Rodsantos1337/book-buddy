@@ -48,3 +48,4 @@ jobs:
           command: pages deploy dist/ --project-name=book-buddy --branch=${{ github.head_ref || github.ref_name }}
         env:
           WRANGLER_VERSION: "4"
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
