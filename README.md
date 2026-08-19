@@ -1,5 +1,7 @@
 # BookBuddy
 
+![BookBuddy](assets/book-buddy.png)
+
 Book Buddy is a simple app for finding out what book to read next.
 LLMs are surprisingly good at recommending books on their own; this app
 allows the LLM to actually search using the Open Library API to look for
