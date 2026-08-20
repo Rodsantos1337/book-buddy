@@ -1,15 +1,14 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Settings, ModelInfo } from "../types";
 import { fetchModels } from "../api/chat";
 
 interface SettingsModalProps {
-  open: boolean;
   settings: Settings;
   onSave: (s: Settings) => void;
   onClose: () => void;
 }
 
-export default function SettingsModal({ open, settings, onSave, onClose }: SettingsModalProps) {
+export default function SettingsModal({ settings, onSave, onClose }: SettingsModalProps) {
   const [baseUrl, setBaseUrl] = useState(settings.baseUrl);
   const [apiKey, setApiKey] = useState(settings.apiKey);
   const [model, setModel] = useState(settings.model);
@@ -17,14 +16,11 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
   const [loading, setLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
-  if (!open) return null;
-
-  const handleFetch = async () => {
-    if (!baseUrl) return;
+  const loadModels = useCallback(async (url: string) => {
     setLoading(true);
     setFetchError(null);
     try {
-      const list = await fetchModels(baseUrl);
+      const list = await fetchModels(url);
       const free = list.filter((m) => m.id.endsWith(":free"));
       setModels(free.length > 0 ? free : list);
     } catch {
@@ -33,12 +29,19 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (settings.baseUrl) void loadModels(settings.baseUrl);
+  }, [settings.baseUrl, loadModels]);
 
   const handleSave = () => {
     onSave({ baseUrl, apiKey, model });
     onClose();
   };
+
+  const modelIds = new Set(models.map((m) => m.id));
+  const hasSavedModel = model.length > 0 && !modelIds.has(model);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
@@ -56,7 +59,7 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
             <input
               value={baseUrl}
               onChange={(e) => setBaseUrl(e.target.value)}
-              className="w-full rounded-lg border border-bg-3 bg-bg-0 px-3 py-2 text-sm text-fg focus:border-blue focus:outline-none"
+              className="w-full rounded-lg border border-bg-3 bg-bg-0 px-3 py-2 text-sm text-fg focus:border-green focus:outline-none"
               placeholder="https://openrouter.ai/api/v1"
             />
           </div>
@@ -67,9 +70,10 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
               <select
                 value={model}
                 onChange={(e) => setModel(e.target.value)}
-                className="min-w-0 flex-1 rounded-lg border border-bg-3 bg-bg-0 px-3 py-2 text-sm text-fg focus:border-blue focus:outline-none"
+                className="min-w-0 flex-1 rounded-lg border border-bg-3 bg-bg-0 px-3 py-2 text-sm text-fg focus:border-green focus:outline-none"
               >
                 <option value="">Select a model</option>
+                {hasSavedModel && <option value={model}>{model}</option>}
                 {models.map((m) => (
                   <option key={m.id} value={m.id}>
                     {m.id}
@@ -77,7 +81,7 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
                 ))}
               </select>
               <button
-                onClick={handleFetch}
+                onClick={() => void loadModels(baseUrl)}
                 disabled={loading || !baseUrl}
                 className="cursor-pointer rounded-lg border border-bg-3 px-3 py-2 text-sm text-grey-0 hover:bg-bg-2 disabled:opacity-50"
               >
@@ -86,7 +90,9 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
             </div>
             {fetchError && <p className="mt-1 text-xs text-red">{fetchError}</p>}
             {models.length === 0 && !loading && !fetchError && (
-              <p className="mt-1 text-xs text-grey-1">Click "Fetch" to load available models.</p>
+              <p className="mt-1 text-xs text-grey-1">
+                No models found — check the Base URL or click "Fetch" to retry.
+              </p>
             )}
           </div>
 
@@ -96,7 +102,7 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="w-full rounded-lg border border-bg-3 bg-bg-0 px-3 py-2 text-sm text-fg focus:border-blue focus:outline-none"
+              className="w-full rounded-lg border border-bg-3 bg-bg-0 px-3 py-2 text-sm text-fg focus:border-green focus:outline-none"
               placeholder="sk-..."
             />
           </div>
@@ -111,7 +117,7 @@ export default function SettingsModal({ open, settings, onSave, onClose }: Setti
           </button>
           <button
             onClick={handleSave}
-            className="cursor-pointer rounded-lg bg-blue px-4 py-2 text-sm text-bg-0 hover:bg-blue/80"
+            className="cursor-pointer rounded-lg bg-green px-4 py-2 text-sm text-bg-0 hover:bg-green/80"
           >
             Save
           </button>

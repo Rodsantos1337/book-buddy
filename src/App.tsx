@@ -14,6 +14,7 @@ export default function App() {
     error,
     settings,
     updateSettings,
+    resetChat,
     sendMessage,
     removeSuggestion,
     markInterested,
@@ -29,7 +30,7 @@ export default function App() {
 
   return (
     <div className="flex h-dvh flex-col">
-      <Header onOpenSettings={() => setSettingsOpen(true)} />
+      <Header hasStarted={messages.length > 0} onReset={resetChat} onOpenSettings={() => setSettingsOpen(true)} />
       <main className="flex flex-1 overflow-hidden">
         <section className="flex w-2/5 min-w-0 flex-col overflow-hidden border-r border-bg-3">
           <ChatContainer messages={messages} isLoading={isLoading} error={error} onSend={sendMessage} />
@@ -49,12 +50,9 @@ export default function App() {
         onInterested={markInterested}
         onRemove={removeSuggestion}
       />
-      <SettingsModal
-        open={settingsOpen}
-        settings={settings}
-        onSave={updateSettings}
-        onClose={() => setSettingsOpen(false)}
-      />
+      {settingsOpen && (
+        <SettingsModal settings={settings} onSave={updateSettings} onClose={() => setSettingsOpen(false)} />
+      )}
     </div>
   );
 }

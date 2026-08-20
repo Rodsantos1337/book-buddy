@@ -1,28 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useRef, useCallback } from "react";
 import type { ChatMessage, BookSuggestion, Settings } from "../types";
 import { sendChat } from "../api/chat";
-
-const STORAGE_KEY = "bookbuddy-settings";
-
-const DEFAULT_SETTINGS: Settings = {
-  baseUrl: "https://openrouter.ai/api/v1",
-  model: "",
-  apiKey: "",
-};
-
-function loadSettings(): Settings {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
-  } catch {
-    /* JSON parse or localStorage access failed — use defaults */
-  }
-  return DEFAULT_SETTINGS;
-}
-
-function saveSettings(s: Settings) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
-}
+import { loadSettings, saveSettings } from "../lib/settings";
 
 export function useChat() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -30,10 +9,19 @@ export function useChat() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [settings, setSettingsState] = useState<Settings>(loadSettings);
+  const resetGenRef = useRef(0);
 
   const updateSettings = useCallback((s: Settings) => {
     setSettingsState(s);
     saveSettings(s);
+  }, []);
+
+  const resetChat = useCallback(() => {
+    resetGenRef.current += 1;
+    setMessages([]);
+    setBoardBooks([]);
+    setIsLoading(false);
+    setError(null);
   }, []);
 
   const sendMessage = useCallback(
@@ -43,6 +31,7 @@ export function useChat() {
       setIsLoading(true);
       setError(null);
 
+      const gen = resetGenRef.current;
       const chatHistory = [...messages, userMsg].map((m) => ({
         role: m.role,
         content: m.text,
@@ -54,6 +43,8 @@ export function useChat() {
           suggestions: boardBooks,
           settings,
         });
+
+        if (gen !== resetGenRef.current) return;
 
         if (res.removedIds?.length > 0) {
           setBoardBooks((prev) =>
@@ -71,9 +62,10 @@ export function useChat() {
 
         setMessages((prev) => [...prev, { role: "assistant", text: res.text }]);
       } catch (err) {
+        if (gen !== resetGenRef.current) return;
         setError(err instanceof Error ? err.message : "Something went wrong");
       } finally {
-        setIsLoading(false);
+        if (gen === resetGenRef.current) setIsLoading(false);
       }
     },
     [messages, boardBooks, settings],
@@ -94,6 +86,7 @@ export function useChat() {
     error,
     settings,
     updateSettings,
+    resetChat,
     sendMessage,
     removeSuggestion,
     markInterested,

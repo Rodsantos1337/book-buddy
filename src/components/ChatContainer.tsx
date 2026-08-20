@@ -44,7 +44,7 @@ export default function ChatContainer({ messages, isLoading, error, onSend }: Ch
 
         {isLoading && (
           <div className="mt-4 flex items-center gap-2 text-sm text-grey-0">
-            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-blue" />
+            <span className="inline-block h-2 w-2 animate-pulse rounded-full bg-green" />
             BookBuddy is searching...
           </div>
         )}
@@ -62,7 +62,7 @@ export default function ChatContainer({ messages, isLoading, error, onSend }: Ch
             <button
               key={text}
               onClick={() => onSend(text)}
-              className="cursor-pointer rounded-full border border-bg-3 bg-bg-1 px-3 py-1.5 text-xs text-grey-0 hover:border-blue/40 hover:text-fg"
+              className="cursor-pointer rounded-full border border-bg-3 bg-bg-1 px-3 py-1.5 text-xs text-grey-0 hover:border-green/40 hover:text-fg"
             >
               {text}
             </button>

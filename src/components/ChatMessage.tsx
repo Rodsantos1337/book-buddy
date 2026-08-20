@@ -13,7 +13,7 @@ const markdownComponents = {
     <code className="rounded bg-bg-2 px-1 text-sm">{children}</code>
   ),
   a: ({ href, children }: { href?: string; children?: React.ReactNode }) => (
-    <a href={href} className="underline text-blue hover:text-blue/80" target="_blank" rel="noopener noreferrer">
+    <a href={href} className="underline text-green hover:text-green/80" target="_blank" rel="noopener noreferrer">
       {children}
     </a>
   ),
@@ -31,7 +31,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       <div className="max-w-[80%]">
         <div
           className={`rounded-2xl px-4 py-3 text-sm ${
-            isUser ? "bg-blue text-bg-0" : "bg-bg-1 text-fg ring-1 ring-bg-3"
+            isUser ? "bg-green text-bg-0" : "bg-bg-1 text-fg ring-1 ring-bg-3"
           }`}
         >
           <ReactMarkdown components={markdownComponents}>{message.text}</ReactMarkdown>

@@ -33,6 +33,7 @@ export interface OpenLibraryDoc {
   first_publish_year?: number;
   cover_i?: number;
   subject?: string[];
+  coverUrl?: string;
 }
 
 export interface ToolCall {

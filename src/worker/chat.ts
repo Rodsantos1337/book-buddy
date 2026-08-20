@@ -14,7 +14,7 @@ const MAX_TOOL_ITERATIONS = 5;
 const SYSTEM_PROMPT = `You are BookBuddy, an expert book recommendation assistant. Your goal is to help the user find the perfect book through conversational discovery and managing their recommendation board.
 
 SEARCH GUIDELINES & QUERY FORMULATION:
-1. Open Library search is a standard keyword index. It does NOT understand negations (e.g., "no romance") or natural language prompts (e.g., "books like Harry Potter").
+1. Book search is a standard keyword index. It does NOT understand negations (e.g., "no romance") or natural language prompts (e.g., "books like Harry Potter").
 2. To handle negative constraints or style requests, search positively for the core genre, theme, or overarching category. Filter the results in your context window before presenting them, selecting only the ones that match the user's constraints.
 3. If the user names a seed book, perform a multi-step search:
    - First, search for the seed book to discover its subjects, authors, or styles.
@@ -84,7 +84,7 @@ function buildAddToBoardTool(): ToolDefinition {
         items: {
           type: "object",
           properties: {
-            id: { type: "string", description: "Open Library key (e.g. /works/OL123W)" },
+            id: { type: "string", description: "Book id (e.g. /works/OL123W or google-abc123)" },
             title: { type: "string" },
             author: { type: "string" },
             coverUrl: { type: "string", description: "Cover image URL or empty string" },
@@ -108,7 +108,7 @@ function buildRemoveFromBoardTool(): ToolDefinition {
       bookIds: {
         type: "array",
         items: { type: "string" },
-        description: "Open Library keys of the books to remove",
+        description: "Book ids of the books to remove",
       },
     },
     ["bookIds"],
@@ -218,6 +218,7 @@ async function callOpenAI(
 
 export async function handleChat(c: Context): Promise<Response> {
   const body = await c.req.json<ChatRequest>();
+  const env = c.env as Record<string, string | undefined>;
 
   if (!body.settings?.apiKey) {
     return c.json({ error: "Missing API key — check Settings" }, 400);
@@ -298,16 +299,17 @@ export async function handleChat(c: Context): Promise<Response> {
 
       if (toolCall.function.name === "searchBooks") {
         const args = JSON.parse(toolCall.function.arguments);
-        const docs = await searchBooks(args.query, args.limit || 5);
+        const docs = await searchBooks(args.query, args.limit || 5, env.GOOGLE_BOOKS_API_KEY);
 
         const results = docs.map((d) => {
-          coverMap.set(d.key, toCoverUrl(d.cover_i));
+          const cover = d.coverUrl || toCoverUrl(d.cover_i);
+          coverMap.set(d.key, cover);
           return {
             key: d.key,
             title: d.title,
             author: formatAuthor(d.author_name),
             year: d.first_publish_year,
-            coverUrl: toCoverUrl(d.cover_i),
+            coverUrl: cover,
             subjects: (d.subject || []).slice(0, 3),
           };
         });

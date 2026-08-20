@@ -40,7 +40,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
             <p className="mt-2 text-sm text-grey-0">An unexpected error occurred. Please try again.</p>
             <button
               onClick={this.handleReset}
-              className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full border border-bg-3 bg-bg-1 px-5 py-2 text-sm text-grey-0 hover:border-blue/40 hover:text-fg"
+              className="mt-6 inline-flex cursor-pointer items-center gap-2 rounded-full border border-bg-3 bg-bg-1 px-5 py-2 text-sm text-grey-0 hover:border-green/40 hover:text-fg"
             >
               <RefreshCw className="h-4 w-4" />
               Try Again
